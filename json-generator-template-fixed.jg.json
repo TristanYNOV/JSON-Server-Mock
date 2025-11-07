@@ -1,0 +1,46 @@
+{
+  "users": [
+    '{{ repeat(15) }}',
+    {
+      "id": '{{ index() + 1 }}',
+      "name": '{{ firstName() }} {{ surname() }}',
+      "avatar": 'https://i.pravatar.cc/128?u={{ guid() }}'
+    }
+  ],
+  "articles": [
+    '{{ repeat(50) }}',
+    {
+      "id": '{{ index() + 1 }}',
+      "title": '{{ lorem(5, "words") }}',
+      "image": 'https://picsum.photos/seed/{{ guid() }}/960/540',
+      "content": '{{ lorem(1, "paragraphs") }}',
+      "publishedAt": '{{ date(new Date(2023, 0, 1), new Date(), "YYYY-MM-DDTHH:mm:ss[Z]") }}',
+      "tags": [
+        '{{ repeat(1,3) }}',
+        '{{ random("tech","science","politics","finance","culture","health","sport","world","travel","gaming") }}'
+      ],
+      "authorId": '{{ integer(1, 15) }}',
+      "likeCount": '{{ integer(0, 3500) }}'
+    }
+  ],
+  "comments": [
+    '{{ repeat(200) }}',
+    {
+      "id": '{{ index() + 1 }}',
+      "articleId": '{{ integer(1, 50) }}',
+      "userId": '{{ integer(1, 15) }}',
+      "content": '{{ lorem(1, "sentences") }}',
+      "createdAt": '{{ date(new Date(2023, 0, 1), new Date(), "YYYY-MM-DDTHH:mm:ss[Z]") }}',
+      "likes": '{{ integer(0, 250) }}'
+    }
+  ],
+  "likes": [
+    '{{ repeat(400) }}',
+    {
+      "id": '{{ index() + 1 }}',
+      "articleId": '{{ integer(1, 50) }}',
+      "userId": '{{ integer(1, 15) }}',
+      "createdAt": '{{ date(new Date(2023, 0, 1), new Date(), "YYYY-MM-DDTHH:mm:ss[Z]") }}'
+    }
+  ]
+}

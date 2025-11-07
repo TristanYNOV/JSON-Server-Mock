@@ -1,0 +1,17 @@
+# Node / npm
+node_modules/
+npm-debug.log*
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# macOS
+.DS_Store
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+
+# Docker
+**/.env

@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  jsonserver:
+    build: .
+    container_name: json-server-mock
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./generated.json:/data/generated.json:ro
+
