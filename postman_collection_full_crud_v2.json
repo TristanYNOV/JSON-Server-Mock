@@ -1,0 +1,430 @@
+{
+  "info": {
+    "name": "Discover Mock API – Full CRUD (JSON Server)",
+    "_postman_id": "crud-collection-1234-v2",
+    "description": "Tests CRUD pour /users, /articles, /comments, /likes + filtres/pagination et embed/expand. Inclut un dossier Health.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const now = new Date().toISOString();",
+          "try { pm.environment.set('isoNow', now); } catch(e) { pm.variables.set('isoNow', now); }"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "articleId",
+      "value": "1"
+    },
+    {
+      "key": "commentId",
+      "value": "1"
+    },
+    {
+      "key": "likeId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Env",
+      "item": [
+        {
+          "name": "Root resources",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function(){ pm.response.to.have.status(200); });",
+                  "pm.test('JSON body', function(){ pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ping articles (limit 1)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/articles?_limit=1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function(){ pm.response.to.have.status(200); });",
+                  "pm.test('Array response', function(){ pm.expect(pm.response.json()).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "GET /users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "GET /users/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        },
+        {
+          "name": "POST /users",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/users",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Doe\",\n  \"avatar\": \"https://i.pravatar.cc/128?u=alice-doe\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT /users/:id",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/users/{{userId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{userId}},\n  \"name\": \"Alice Doe (updated)\",\n  \"avatar\": \"https://i.pravatar.cc/128?u=alice-updated\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /users/:id",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/users/{{userId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Patched\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /users/:id",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Articles",
+      "item": [
+        {
+          "name": "GET /articles",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/articles"
+          }
+        },
+        {
+          "name": "GET /articles (page/sort)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/articles?_page=1&_limit=10&_sort=publishedAt&_order=desc"
+          }
+        },
+        {
+          "name": "GET /articles?tags_like=tech",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/articles?tags_like=tech&_page=1&_limit=10&_sort=publishedAt&_order=desc"
+          }
+        },
+        {
+          "name": "GET /articles/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/articles/{{articleId}}"
+          }
+        },
+        {
+          "name": "GET /articles/:id?_embed=comments&_expand=author",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/articles/{{articleId}}?_embed=comments&_expand=author"
+          }
+        },
+        {
+          "name": "POST /articles",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/articles",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Nouveau papier sur l’IA\",\n  \"image\": \"https://picsum.photos/seed/new-ia/960/540\",\n  \"content\": \"Contenu de test...\",\n  \"publishedAt\": \"{{isoNow}}\",\n  \"tags\": [\"tech\",\"ai\"],\n  \"authorId\": 1,\n  \"likeCount\": 0\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT /articles/:id",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/articles/{{articleId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{articleId}},\n  \"title\": \"Article remplacé\",\n  \"image\": \"https://picsum.photos/seed/replaced/960/540\",\n  \"content\": \"Version remplacée\",\n  \"publishedAt\": \"{{isoNow}}\",\n  \"tags\": [\"tech\"],\n  \"authorId\": 1,\n  \"likeCount\": 10\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /articles/:id",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/articles/{{articleId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Article patché\",\n  \"likeCount\": 42\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /articles/:id",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/articles/{{articleId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "GET /comments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments"
+          }
+        },
+        {
+          "name": "GET /comments?articleId={{articleId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments?articleId={{articleId}}&_sort=createdAt&_order=desc"
+          }
+        },
+        {
+          "name": "GET /comments/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/comments/{{commentId}}"
+          }
+        },
+        {
+          "name": "POST /comments",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/comments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"articleId\": {{articleId}},\n  \"userId\": 1,\n  \"content\": \"Très bon papier !\",\n  \"createdAt\": \"{{isoNow}}\",\n  \"likes\": 0\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT /comments/:id",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/comments/{{commentId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{commentId}},\n  \"articleId\": {{articleId}},\n  \"userId\": 1,\n  \"content\": \"Commentaire remplacé\",\n  \"createdAt\": \"{{isoNow}}\",\n  \"likes\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /comments/:id",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/comments/{{commentId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Commentaire patché\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /comments/:id",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/comments/{{commentId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Likes",
+      "item": [
+        {
+          "name": "GET /likes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/likes"
+          }
+        },
+        {
+          "name": "GET /likes?articleId={{articleId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/likes?articleId={{articleId}}"
+          }
+        },
+        {
+          "name": "GET /likes/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/likes/{{likeId}}"
+          }
+        },
+        {
+          "name": "POST /likes",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/likes",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"articleId\": {{articleId}},\n  \"userId\": 1,\n  \"createdAt\": \"{{isoNow}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT /likes/:id",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/likes/{{likeId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{likeId}},\n  \"articleId\": {{articleId}},\n  \"userId\": 1,\n  \"createdAt\": \"{{isoNow}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /likes/:id",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/likes/{{likeId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /likes/:id",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/likes/{{likeId}}"
+          }
+        }
+      ]
+    }
+  ]
+}
